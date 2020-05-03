@@ -59,7 +59,7 @@ def set_completed_todo(todo_id):
 
     return redirect(url_for('index'))
 
-@app.route('/todos/delete/<todo_id>', methods=['POST'])
+@app.route('/todos/delete/<todo_id>', methods=['DELETE'])
 def delete(todo_id):
     try:
         todo = Todo.query.get(todo_id)
@@ -70,7 +70,7 @@ def delete(todo_id):
     finally:
         db.session.close()
 
-    return redirect(url_for('index'))
+    return jsonify({'success': True})
 
 @app.route('/')
 def index():
