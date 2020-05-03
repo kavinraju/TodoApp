@@ -6,11 +6,20 @@ app = Flask(__name__)
 db = SQLAlchemy(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:pass@localhost:5432/todoapp'
 
+# child model
 class Todo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
+    todolist_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
+
+# parent model
+class TodoList(db.Model):
+    __tablename__ = 'todolists'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+    todos = db.relationship('Todo', backref='list', lazy=True)
 
 def __repr__(self):
     return f'<Todo {self.id} {self.description}>'
