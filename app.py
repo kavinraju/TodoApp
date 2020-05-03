@@ -4,12 +4,13 @@ import sys
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:skr123@localhost:5432/todoapp'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:pass@localhost:5432/todoapp'
 
 class Todo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(), nullable=False)
+    completed = db.Column(db.Boolean, nullable=False, default=False)
 
 def __repr__(self):
     return f'<Todo {self.id} {self.description}>'
@@ -25,7 +26,9 @@ def todo_create():
         todo = Todo(description=description)
         db.session.add(todo)
         db.session.commit()
+        body['todo_id'] = todo.id
         body['description'] = todo.description
+        body['completed'] = todo.completed
     except:
         # session handler is rolled back to avoid the implictied commits done by the database on closing a connection.
         db.session.rollback()
@@ -38,6 +41,23 @@ def todo_create():
         abort(400)
     else:
         return jsonify(body)
+
+
+# <todo_id> should be same as in the method argument
+@app.route('/todos/<todo_id>/set-completed', methods=['POST'])
+def set_completed_todo(todo_id):
+    try:    
+        completed = request.get_json()['completed']
+        todo = Todo.query.get(todo_id)
+        print('completed kavin ', completed, 'id = ', todo_id)
+        todo.completed = completed
+        db.session.commit()
+    except:
+        db.session.rollback()
+    finally:
+        db.session.close()
+
+    return redirect(url_for('index'))
 
 
 @app.route('/')
