@@ -11,10 +11,23 @@
                 padding: 16px;
                 margin: 10px;
             }
+
+            li {
+                clear: both;
+                width: 200px;
+                padding: 10px;
+                margin: 0px;
+            }
+            li button{
+                border: none;
+                outline: none;
+                color: red;
+                float: right;
+            }
         </style>
     </head>
     <body>
-        <div style="background-color:blanchedalmond; width:90%; margin: 0 auto; padding: 50px;">
+        <div style="background-color:goldenrod; width:90%; margin: 0 auto; padding: 50px;">
 
         <form id="form"> 
             <label for="desp">Todo Description</label>
@@ -26,6 +39,7 @@
             <li> 
                 <input id="checkbox_todo_completed" class="check-completed" data-id="{{ d.id }}" type="checkbox" {% if d.completed %} checked {% endif %}>
                 {{ d.description}}
+                <button id="btn_todo_delete" class="delete-btn" data-id="{{ d.id }}">&cross;</button>
             </li>
             {% endfor %}
         </ul>
@@ -35,6 +49,12 @@
 
     <script>
 
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        for(let i=0; i < deleteButtons.length; i++){
+            const delBtn = deleteButtons[i];
+            setDeleteButtonListener(delBtn);
+        }
+        
         const checkboxes = document.querySelectorAll('.check-completed');
         for(let i=0; i < checkboxes.length; i++){
             
@@ -87,11 +107,34 @@
             checkbox.onchange = function(e) {
                 console.log(e);
                 const newCompleted  = e.target.checked;
-                const todoId = e.target.dataset['id']
+                const todoId = e.target.dataset['id'];
                 fetch('/todos/' + todoId + '/set-completed',{
                     method: 'POST',
                     body:JSON.stringify({
                         'completed':newCompleted,
+                    }),
+                    headers:{
+                        'Content-Type':'application/json'
+                    }
+                }).then(function(){
+                    document.getElementById('error').className = 'hidden'
+                }).catch(function(e){
+                    console.error(e);
+                    
+                    document.getElementById('error').className = ''
+                })
+            }
+        }
+
+        function setDeleteButtonListener(btn){
+            btn.onclick = function(e){
+                console.log(e);
+
+                const todoId = e.target.dataset['id'];
+                fetch('/todos/delete/' + todoId, {
+                    method: 'POST',
+                    body: JSON.stringify({
+
                     }),
                     headers:{
                         'Content-Type':'application/json'
