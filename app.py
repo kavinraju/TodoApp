@@ -99,3 +99,24 @@ def get_list_todos(list_id):
 @app.route('/')
 def index():
     return redirect(url_for('get_list_todos', list_id=1))
+
+
+### MANY TO MANY RELATIONSHIP EXAMPLE ###
+""" order_items = db.Table('order_items', 
+    db.Column('order_id', db.Integer, db.ForeignKey('order.id'), primary_key=True),
+    db.Column('product_it', db.Integer, db.ForeignKey('product.id'), primary_key=True)
+)
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(), nullable=False)
+    products = db.relationship('Product', secondary=order_items, backref=db.backref('orders'), lazy=True)
+    def __repr__(self):
+        return f'<Order {self.id} {self.status}>'
+
+class Product(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+
+    def __repr__(self):
+        return f'<Product {self.id} {self.name}>' """
