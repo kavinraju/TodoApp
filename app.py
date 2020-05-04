@@ -18,7 +18,7 @@ class Todo(db.Model):
     todolist_id = db.Column(db.Integer, db.ForeignKey('todolists.id'), nullable=False)
 
     def __repr__(self):
-    return f'<Todo {self.id} {self.description}>'
+        return f'<Todo {self.id} {self.description}>'
 
 # parent model
 class TodoList(db.Model):
@@ -28,7 +28,7 @@ class TodoList(db.Model):
     todos = db.relationship('Todo', backref='list', lazy=True)
 
     def __repr__(self):
-    return f'<TodoList {self.id} {self.name}>'
+        return f'<TodoList {self.id} {self.name}>'
 
 
 
